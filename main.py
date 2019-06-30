@@ -1,27 +1,184 @@
+from create import creator
+from user import Print
 
-def debugger(matrix):
-    for row_n in range(8):
-        for column_n in range(8):
-            if row_n%2 == column_n%2:
-                if matrix[row_n][column_n] != " ":
-                    print "Error! Row: Column:  == , it has been changed back to a " "".format(row_n,column_n,matrix[row_n][column_n])
-            else:
+matrix = creator()
 
-                matrix[row_n][column_n] = "0"
-    return matrix
-matrix = [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
-stf =  debugger(matrix)
-
-def Print(matrix):
-    board = ""
-    board += "__________________\n"
-    for row in matrix:
-        row_t = ""
-        for unit in row:
-            row_t += unit 
-            row_t += " "
-        board += "|" + row_t + "|\n"
+def all_poss(matrix,team):#returns all possible outcomes for this position on the board
+    poss = []
+    for r in range(8):
+        for c in range(8):
+            if r%2 == c%2: #if it's from the black spaces on the board 
+                if str(matrix[r][c]) == team : #if there is a piece on 
+                    poss += sall_poss(matrix,r,c,team)
+    return poss
+def sall_poss(m,r,c,team):#returns a list of all possible (legal) moves that could be done from our location (ONLY if the unit in this space is on our team)
+    nlist = []
+    if team == "x":
+        if matrix[r][c] == team: #our piece is lowercase, therefor can only move forward
+            print team
+            print "you chose a piece from your team"
+        
+            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+            #nlist includes all the possible moves from our location 
+        
+        elif str(matrix[r][c]).lower() == team:
+            print team
+            print "you chose a piece from your team"
+        
+            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+    if team == "o":
+        if matrix[r][c] == team:
+            print team
+            print "you chose a piece from your team"
+        
+            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            lister = [d_moveL(m,r,c), d_moveR(m,r,c),d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+            #nlist includes all the possible moves from our location 
+        
+        elif str(matrix[r][c]).lower() == team:
+            print team
+            print "you chose a piece from your team"
+        
+            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
     
-    board += "------------------"
-    print board 
-Print(stf) 
+    return nlist
+def opp(team):
+    if team.lower() == 'x':
+        return 'o'
+    else:
+        return 'x'
+    
+def u_moveL(matrix,r,c):
+    if r > 0 and c > 0:#we can move it
+        if matrix[r-1][c-1] == 0:
+            temp = [x[:]for x in matrix]
+            temp[r-1][c-1] = temp[r][c]
+            temp[r][c] = 0
+            return temp
+    return False
+def u_moveLKill(matrix,r,c):
+    Print(matrix)
+    team = matrix[r][c].lower()
+    if r > 1 and c > 1:#we can jump in this direction (+2)
+        if str(matrix[r-1][c-1]).lower() == opp(team): #if the space we are looking at isn't on the same team as our current space
+            if matrix[r-2][c-2] == 0:#empty - so we can land on it
+                temp = [x[:]for x in matrix]
+                temp[r-2][c-2] = temp[r][c]
+                temp[r-1][c-1] = 0
+                temp[r][c] = 0
+                return temp
+    return False
+def u_moveR(matrix,r,c):
+    if r > 0 and c < 7:#we can move in this direction
+        if matrix[r-1][c+1] == 0:#the landing space is empty
+            temp = [x[:]for x in matrix]
+            temp[r-1][c+1] = temp[r][c]
+            temp[r][c] = 0
+            return temp
+    return False
+def u_moveRKill(matrix,r,c):
+    team = matrix[r][c].lower()
+    
+    if r > 1 and c < 6:
+        if str(matrix[r-1][c+1]).lower() == opp(team):
+            if matrix[r-2][c+2] == 0:
+                temp = [x[:]for x in matrix]
+                temp[r-2][c+2] = temp[r][c]
+                temp[r-1][c+1] = 0
+                temp[r][c] = 0
+                return temp
+    return False
+
+def d_moveR(matrix,r,c):
+    if r < 7 and c < 7:#we can move in this direction
+        if matrix[r+1][c+1] == 0:#the landing space is empty
+            temp = [x[:]for x in matrix]
+            temp[r+1][c+1] = temp[r][c]
+            temp[r][c] = 0
+            return temp
+    return False
+def d_moveRKill(matrix,r,c):
+    team = matrix[r][c].lower()
+    if r < 6 and c < 6:#we can jump in this direction (+2)
+        if str(matrix[r+1][c+1]).lower() == opp(team): #if the space we have here isn't on our team (also not cap of out team) 
+            if matrix[r+2][c+2] == 0:#empty - so we can land on it
+                temp = [x[:]for x in matrix]
+                temp[r+2][c+2] = temp[r][c]
+                temp[r+1][c+1] = 0
+                temp[r][c] = 0
+                return temp
+    return False
+def d_moveL(matrix,r,c):
+    if r < 7 and c > 0:#we can move it
+        if matrix[r+1][c-1] == 0:
+            temp = [x[:]for x in matrix]
+            temp[r+1][c-1] = temp[r][c]
+            temp[r][c] = 0
+            return temp
+    return False
+def d_moveLKill(matrix,r,c):
+    team = matrix[r][c].lower()
+    if r < 6 and c > 1:#we can jump in this direction (+2)
+        if str(matrix[r+1][c-1]).lower() == opp(team): #if the space we have here isn't on our team (also not cap of out team) 
+            if matrix[r+2][c-2] == 0:#empty - so we can land on it
+                temp = [x[:]for x in matrix]
+                temp[r+2][c-2] = temp[r][c]
+                temp[r+1][c-1] = 0
+                temp[r][c] = 0
+                return temp
+    return False
+def Input(text):
+    try:    return input(text)
+    except:
+        print "Numbers only!"
+        return Input(text)
+def kinging(matrix):
+    for column in range(8):
+        if matrix[0][column] == "x":
+            matrix[0][column] = "X"
+    for column in range(8):
+        if matrix[7][column] == "o":
+            matrix[7][column] = "O"
+while True:
+    Print(matrix)
+    cm = False
+    while cm == False:
+        row = Input("Row:")
+        column = Input("Column:")
+        lister = sall_poss(matrix,row,column,'x')
+        for i in range(1,len(lister)+1):
+            print i
+            Print(lister[i-1])
+        move = Input("Please enter the number move you would like to do (0 to try again): ")
+        if move == 0:
+            pass
+        else:
+            cm = True
+    matrix = lister[move-1]
+    kinging(matrix)
+    Print(matrix)
+
+
+    poss = all_poss(matrix,"o")
+    matrix = poss[len(poss)-1]
+    kinging(matrix)
+    Print(matrix)
+#stf =  debugger(matrix)
+
+
+Print(matrix) 
