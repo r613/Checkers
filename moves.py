@@ -1,18 +1,18 @@
+from user import Print
 def all_poss(matrix,team):#returns all possible outcomes for this position on the board
     poss = []
     for r in range(8):
         for c in range(8):
             if r%2 == c%2: #if it's from the black spaces on the board 
-                if str(matrix[r][c]) == team : #if there is a piece on 
+                if str(matrix[r][c]).lower() == team : #if there is a piece on 
                     poss += sall_poss(matrix,r,c,team)
+    #Print(matrix)
+    
     return poss
 def sall_poss(m,r,c,team):#returns a list of all possible (legal) moves that could be done from our location (ONLY if the unit in this space is on our team)
     nlist = []
     if team == "x":
         if m[r][c] == team: #our piece is lowercase, therefor can only move forward
-            print team
-            print "you chose a piece from your team"
-        
             #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
             lister = [u_moveL(m,r,c),   u_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c)]
             for i in lister:
@@ -21,38 +21,31 @@ def sall_poss(m,r,c,team):#returns a list of all possible (legal) moves that cou
             #nlist includes all the possible moves from our location 
         
         elif str(m[r][c]).lower() == team:
-            print team
-            print "you chose a piece from your team"
-        
-            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            
             lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
             for i in lister:
                 if i:
                     nlist.append(i)
     if team == "o":
         if m[r][c] == team:
-            print team
-            print "you chose a piece from your team"
         
-            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            
             lister = [d_moveL(m,r,c), d_moveR(m,r,c),d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
             for i in lister:
                 if i:
                     nlist.append(i)
-            #nlist includes all the possible moves from our location 
+            
         
         elif str(m[r][c]).lower() == team:
-            print team
-            print "you chose a piece from your team"
         
-            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            
             lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
             for i in lister:
                 if i:
                     nlist.append(i)
     
     return nlist
-def opp(team):
+def opp(team):#know your enemy
     if team.lower() == 'x':
         return 'o'
     else:
