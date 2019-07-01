@@ -1,27 +1,53 @@
+import os 
+from create import creator
+from user import Print
+from ai import best
+matrix = creator()
+from moves import opp
+from moves import sall_poss
+from moves import kinging
+from moves import all_poss
+from ai import bester
+def Input(text):
+    try:    return input(text)
+    except:
+        print "Numbers only!"
+        return Input(text)
 
-def debugger(matrix):
-    for row_n in range(8):
-        for column_n in range(8):
-            if row_n%2 == column_n%2:
-                if matrix[row_n][column_n] != " ":
-                    print "Error! Row: Column:  == , it has been changed back to a " "".format(row_n,column_n,matrix[row_n][column_n])
-            else:
+allmoves = []
+while True:
+    Print(matrix)
+    cm = False#choice made 
+    while cm == False:
+        row = Input("Row:")
+        column = Input("Column:")
+        lister = sall_poss(matrix,row-1,column-1,'x')#list of all possible moves from our unit
+        for i in range(1,len(lister)+1):
+            print "\n\n" + str(i)
+            Print(lister[i-1])
 
-                matrix[row_n][column_n] = "0"
-    return matrix
-matrix = [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
-stf =  debugger(matrix)
-
-def Print(matrix):
-    board = ""
-    board += "__________________\n"
-    for row in matrix:
-        row_t = ""
-        for unit in row:
-            row_t += unit 
-            row_t += " "
-        board += "|" + row_t + "|\n"
+        move = Input("Please enter the number move you would like to do (0 to try again): ")
+        if move == 0 or move>len(lister):
+            print "Let's try again"
+            pass
+        else:
+            cm = True
+    matrix = lister[move-1]#makes the users move
     
-    board += "------------------"
-    print board 
-Print(stf) 
+    kinging(matrix)#King's any players who have made it to enemy border 
+    allmoves.append([x[:]for x in matrix]) #saves our current position in a massive list
+    os.system("clear")
+    for mtx in allmoves:
+        Print(mtx)
+    #Print(matrix)#prints our current position
+    
+    poss = all_poss(matrix,"o")
+    matrix = bester(poss,"o")
+    
+    kinging(matrix)
+    allmoves.append([x[:]for x in matrix])
+    #Print(matrix)
+#stf =  debugger(matrix)
+
+
+Print(matrix) 
