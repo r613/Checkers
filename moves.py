@@ -16,7 +16,7 @@ def all_poss(matrix,team):#returns all possible outcomes for this position on th
     #Print(matrix)
     
     return poss
-def all_possK(matrix,team):
+def all_possK(matrix,team):#returns all Possible kills, returns False if there are no kills 
     possi = []
     for r in range(8):
         for c in range(8):
@@ -94,8 +94,22 @@ def sall_possK(m,r,c,team):#returns a list of all possible (legal) moves that co
             for i in lister:
                 if i:
                     nlist.append(i)
-    
-    return nlist
+    more = []
+    for mat in nlist:#for every one of the moves we got above, we add all of the following possible kills to more
+        rowl,coll = change(m,mat) #marks the location from where we'd be moving now
+        more += sall_possK(mat,rowl,coll,team) 
+    if more: #if we had a choice to do more kills, return those kills (don't leave the option to only do one kill)
+        return more
+    else:
+        return nlist
+def change(matrix1,matrix2):#returns the location of the pieces which moved from 1 to 2 (doesn't consider spaces which became empty or spaces which got killed)
+    for r in range(8):
+        for c in range(8):
+            if matrix1[r][c] != matrix2[r][c]:
+                if matrix1[r][c] == 0:
+                    return r,c
+
+
 def sall_possM(m,r,c,team):#returns a list of all possible (legal) moves that could be done from our location (ONLY if the unit in this space is on our team)
     nlist = []
     if team == "x":
