@@ -5,8 +5,25 @@ def all_poss(matrix,team):#returns all possible outcomes for this position on th
         for c in range(8):
             if r%2 == c%2: #if it's from the black spaces on the board 
                 if str(matrix[r][c]).lower() == team : #if there is a piece on 
-                    poss += sall_poss(matrix,r,c,team)
+                    poss += sall_possK(matrix,r,c,team)
+    if poss == []:
+        for r in range(8):
+            for c in range(8):
+                if r%2 == c%2: #if it's from the black spaces on the board 
+                    if str(matrix[r][c]).lower() == team : #if there is a piece on 
+                        poss += sall_possM(matrix,r,c,team)
+
+    #Print(matrix)
+    
     return poss
+def all_possK(matrix,team):#returns all Possible kills, returns False if there are no kills 
+    possi = []
+    for r in range(8):
+        for c in range(8):
+            if r%2 == c%2:
+                if str(matrix[r][c]).lower() == team:
+                    possi += sall_possK(matrix,r,c,team)
+    return possi
 def sall_poss(m,r,c,team):#returns a list of all possible (legal) moves that could be done from our location (ONLY if the unit in this space is on our team)
     nlist = []
     if team == "x":
@@ -19,7 +36,7 @@ def sall_poss(m,r,c,team):#returns a list of all possible (legal) moves that cou
             #nlist includes all the possible moves from our location 
         
         elif str(m[r][c]).lower() == team:
-            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            
             lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
             for i in lister:
                 if i:
@@ -27,17 +44,103 @@ def sall_poss(m,r,c,team):#returns a list of all possible (legal) moves that cou
     if team == "o":
         if m[r][c] == team:
         
-            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            
             lister = [d_moveL(m,r,c), d_moveR(m,r,c),d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+            
+        
+        elif str(m[r][c]).lower() == team:
+        
+            
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+    
+    return nlist
+def sall_possK(m,r,c,team):#returns a list of all possible (legal) kills  moves that could be done from our location (ONLY if the unit in this space is on our team)
+    nlist = []
+    if team == "x":
+        if m[r][c] == team: #our piece is lowercase, therefor can only move forward
+            #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
+            lister = [u_moveLKill(m,r,c), u_moveRKill(m,r,c)]
             for i in lister:
                 if i:
                     nlist.append(i)
             #nlist includes all the possible moves from our location 
         
         elif str(m[r][c]).lower() == team:
+            
+            lister = [u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+    if team == "o":
+        if m[r][c] == team:
         
+            
+            lister = [d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+            
+        
+        elif str(m[r][c]).lower() == team:
+        
+            
+            lister = [u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+    more = []
+    for mat in nlist:#for every one of the moves we got above, we add all of the following possible kills to more
+        rowl,coll = change(m,mat) #marks the location from where we'd be moving now
+        more += sall_possK(mat,rowl,coll,team) 
+    if more: #if we had a choice to do more kills, return those kills (don't leave the option to only do one kill)
+        return more
+    else:
+        return nlist
+def change(matrix1,matrix2):#returns the location of the pieces which moved from 1 to 2 (doesn't consider spaces which became empty or spaces which got killed)
+    for r in range(8):
+        for c in range(8):
+            if matrix1[r][c] != matrix2[r][c]:
+                if matrix1[r][c] == 0:
+                    return r,c
+
+
+def sall_possM(m,r,c,team):#returns a list of all possible (legal) moves that could be done from our location (ONLY if the unit in this space is on our team)
+    nlist = []
+    if team == "x":
+        if m[r][c] == team: #our piece is lowercase, therefor can only move forward
             #lister contains ALL the moves can be done from our location #at least of them should be False (moves that couldn't have been done)
-            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c), u_moveLKill(m,r,c), u_moveRKill(m,r,c), d_moveLKill(m,r,c), d_moveRKill(m,r,c)]
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+            #nlist includes all the possible moves from our location 
+        
+        elif str(m[r][c]).lower() == team:
+            
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+    if team == "o":
+        if m[r][c] == team:
+        
+            
+            lister = [d_moveL(m,r,c), d_moveR(m,r,c)]
+            for i in lister:
+                if i:
+                    nlist.append(i)
+            
+        
+        elif str(m[r][c]).lower() == team:
+        
+            
+            lister = [u_moveL(m,r,c),   u_moveR(m,r,c), d_moveL(m,r,c), d_moveR(m,r,c)]
             for i in lister:
                 if i:
                     nlist.append(i)
